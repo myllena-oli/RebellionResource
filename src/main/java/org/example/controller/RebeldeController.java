@@ -3,9 +3,11 @@ package org.example.controller;
 import org.example.model.Rebelde;
 import org.example.service.RebeldeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/rebelde")
@@ -25,13 +27,13 @@ public class RebeldeController {
     }
 
     @PutMapping("/{id}")
-    public Rebelde atualizarLocalizacao(@PathVariable Long rebeldeId, @RequestBody String novaLocalizacao){
-        return rebeldeService.atualizarLocalizacao(rebeldeId, novaLocalizacao);
+    public Rebelde atualizarLocalizacao(@PathVariable Long id, @RequestBody String novaLocalizacao){
+        return rebeldeService.atualizarLocalizacao(id, novaLocalizacao);
     }
 
     @PutMapping("/atualizar-traidor/{id}")
-    public Rebelde reportarTraidor(@PathVariable Long rebeldeId){
-        return rebeldeService.reportarTraidor(rebeldeId);
+    public Rebelde reportarTraidor(@PathVariable Long id){
+        return rebeldeService.reportarTraidor(id);
     }
 
     @GetMapping("/porcentagem-traidores")
@@ -44,9 +46,13 @@ public class RebeldeController {
     }
 
     @PutMapping("/atualizar-inventario/{id}")
-    public Rebelde comprarItem(@PathVariable Long rebeldeId, @RequestParam String item, @RequestParam int quantidade){
-        return rebeldeService.comprarItem(rebeldeId, item, quantidade);
-
+    public ResponseEntity<Object> comprarItem(@PathVariable Long id, @RequestParam String item, @RequestParam int quantidade) {
+        Optional<Rebelde> rebeldeOptional = rebeldeService.comprarItem(id, item, quantidade);
+        if(rebeldeOptional.isPresent()){
+            return ResponseEntity.ok().body("Compra realizada com sucesso!");
+        }else {
+            return ResponseEntity.badRequest().body("Falha ao comprar.");
+        }
     }
 
 }

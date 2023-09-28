@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RebeldeService {
@@ -54,7 +55,7 @@ public class RebeldeService {
         }
 
         long traidores = rebeldes.stream().filter(Rebelde::isTraidor).count();
-        return (double) traidores / rebeldes.size() * 100.0;
+        return (double) traidores / rebeldes.size();
 
     }
 
@@ -65,15 +66,15 @@ public class RebeldeService {
         }
 
         long rebeldesNaoTraidores = rebeldes.stream().filter(p -> !p.isTraidor()).count();
-        return (double) rebeldesNaoTraidores / rebeldes.size() * 100.0;
+        return (double) rebeldesNaoTraidores / rebeldes.size();
     }
 
-    public Rebelde comprarItem(Long rebeldeId, String item, int quantidade) {
+    public Optional<Rebelde> comprarItem(Long rebeldeId, String item, int quantidade) {
         Rebelde rebelde = rebeldeRepository.findById(rebeldeId).orElse(null);
         if (rebelde != null && !rebelde.isTraidor()) {
             double preco = baseDeCompras.getPrecoItem(item);
             if (preco == 0.0) {
-                return null;
+                return Optional.empty();
             }
             double valorTotal = preco * quantidade;
 
@@ -91,14 +92,14 @@ public class RebeldeService {
                     Inventario inventario1 = new Inventario();
                     inventario1.setNome(item);
                     inventario1.setQuantidade(quantidade);
+                    inventario1.setRebelde(rebelde);
                     inventario.add(inventario1);
                 }
-                return rebeldeRepository.save(rebelde);
+                return Optional.of(rebeldeRepository.save(rebelde));
             }
 
         }
-
-        return null;
+        return Optional.empty();
     }
 
 }
