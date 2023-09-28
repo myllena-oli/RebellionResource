@@ -1,0 +1,159 @@
+swagger: "2.0"
+info:
+  title: Sistema de Gerenciamento de Rebeldes
+  description: API para gerenciamento de rebeldes em um mundo pós-apocalíptico.
+  version: 1.0.0
+host: localhost:8090
+basePath: /
+schemes:
+  - http
+paths:
+  /rebelde:
+    post:
+      summary: Adicionar um novo rebelde
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: rebelde
+          description: Dados do rebelde a ser adicionado.
+          required: true
+          schema:
+            $ref: '#/definitions/Rebelde'
+      responses:
+        '200':
+          description: Rebelde adicionado com sucesso.
+          schema:
+            $ref: '#/definitions/Rebelde'
+    get:
+      summary: Listar todos os rebeldes
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Lista de todos os rebeldes.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Rebelde'
+  /rebelde/{id}:
+    put:
+      summary: Atualizar a localização de um rebelde
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID do rebelde a ser atualizado.
+          required: true
+          type: integer
+        - in: body
+          name: novaLocalizacao
+          description: Nova localização do rebelde.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Localização do rebelde atualizada com sucesso.
+          schema:
+            $ref: '#/definitions/Rebelde'
+  /rebelde/atualizar-traidor/{id}:
+    put:
+      summary: Reportar um rebelde como traidor
+      parameters:
+        - name: id
+          in: path
+          description: ID do rebelde a ser reportado como traidor.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Rebelde reportado como traidor com sucesso.
+          schema:
+            $ref: '#/definitions/Rebelde'
+  /rebelde/porcentagem-traidores:
+    get:
+      summary: Calcular a porcentagem de rebeldes traidores
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Porcentagem de rebeldes traidores.
+          schema:
+            type: number
+  /rebelde/porcentagem-rebeldes:
+    get:
+      summary: Calcular a porcentagem de rebeldes não traidores
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Porcentagem de rebeldes não traidores.
+          schema:
+            type: number
+  /rebelde/atualizar-inventario/{id}:
+    put:
+      summary: Comprar um item para um rebelde
+      parameters:
+        - name: id
+          in: path
+          description: ID do rebelde para o qual o item será comprado.
+          required: true
+          type: integer
+        - name: item
+          in: query
+          description: Nome do item a ser comprado.
+          required: true
+          type: string
+        - name: quantidade
+          in: query
+          description: Quantidade do item a ser comprado.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Compra realizada com sucesso.
+          schema:
+            type: string
+        '400':
+          description: Falha ao comprar.
+          schema:
+            type: string
+definitions:
+  Rebelde:
+    type: object
+    properties:
+      id:
+        type: integer
+      nome:
+        type: string
+      idade:
+        type: integer
+      genero:
+        type: string
+      localizacao:
+        type: string
+      carteira:
+        type: number
+      traidor:
+        type: boolean
+      denuncias:
+        type: integer
+      inventario:
+        type: array
+        items:
+          $ref: '#/definitions/Inventario'
+  Inventario:
+    type: object
+    properties:
+      id:
+        type: integer
+      nome:
+        type: string
+      quantidade:
+        type: integer
